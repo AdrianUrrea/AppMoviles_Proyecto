@@ -1,0 +1,12 @@
+<!-- Supabase > Authentication > Emails > Templates > "Confirm sign up"
+     Subject sugerido:  Tu código de confirmación: {{ .Token }}
+     Pega este HTML como cuerpo. Debe contener {{ .Token }} (el código numérico). -->
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 480px; margin: 0 auto; color: #17231E;">
+  <h2 style="margin-bottom: 8px;">Confirma tu correo</h2>
+  <p>Usa este código para terminar de crear tu cuenta:</p>
+  <p style="font-size: 32px; font-weight: 700; letter-spacing: 8px; margin: 24px 0;">{{ .Token }}</p>
+  <p>El código vence en 15 minutos.</p>
+  <p style="color: #5A6A63; font-size: 13px;">
+    Si no creaste esta cuenta, ignora este correo.
+  </p>
+</div>
