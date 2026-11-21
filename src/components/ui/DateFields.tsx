@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { useVerCampoEnfocado } from '@/components/ui/teclado';
 import { colors, radius, spacing, type } from '@/theme';
 
 type Props = {
@@ -34,6 +35,7 @@ export function DateFields({ label, value, onChange, onBlur, error, helper }: Pr
   const mesRef = useRef<ComponentRef<typeof TextInput>>(null);
   const anioRef = useRef<ComponentRef<typeof TextInput>>(null);
 
+  const verCampoEnfocado = useVerCampoEnfocado();
   const message = error ?? helper;
 
   const cajaStyle = (campo: Campo) => [
@@ -54,7 +56,10 @@ export function DateFields({ label, value, onChange, onBlur, error, helper }: Pr
           keyboardType="number-pad"
           maxLength={2}
           accessibilityLabel={`${label}: día`}
-          onFocus={() => setFoco('d')}
+          onFocus={() => {
+            setFoco('d');
+            verCampoEnfocado();
+          }}
           onBlur={() => setFoco(null)}
           onChangeText={(t) => {
             const v = soloDigitos(t, 2);
@@ -72,7 +77,10 @@ export function DateFields({ label, value, onChange, onBlur, error, helper }: Pr
           keyboardType="number-pad"
           maxLength={2}
           accessibilityLabel={`${label}: mes`}
-          onFocus={() => setFoco('m')}
+          onFocus={() => {
+            setFoco('m');
+            verCampoEnfocado();
+          }}
           onBlur={() => setFoco(null)}
           onChangeText={(t) => {
             const v = soloDigitos(t, 2);
@@ -90,7 +98,10 @@ export function DateFields({ label, value, onChange, onBlur, error, helper }: Pr
           keyboardType="number-pad"
           maxLength={4}
           accessibilityLabel={`${label}: año`}
-          onFocus={() => setFoco('y')}
+          onFocus={() => {
+            setFoco('y');
+            verCampoEnfocado();
+          }}
           onBlur={() => {
             setFoco(null);
             onBlur?.(); // se valida al salir del ultimo campo, no mientras se escribe

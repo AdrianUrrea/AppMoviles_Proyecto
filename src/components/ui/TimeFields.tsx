@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { useVerCampoEnfocado } from '@/components/ui/teclado';
 import { colors, radius, spacing, type } from '@/theme';
 
 type Props = {
@@ -29,6 +30,7 @@ export function TimeFields({ label, value, onChange, onBlur, error, helper }: Pr
   const [m, setM] = useState(inicial?.[2] ?? '');
   const [foco, setFoco] = useState<'h' | 'm' | null>(null);
   const minutoRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const verCampoEnfocado = useVerCampoEnfocado();
   const message = error ?? helper;
 
   const caja = (campo: 'h' | 'm') => [
@@ -49,7 +51,10 @@ export function TimeFields({ label, value, onChange, onBlur, error, helper }: Pr
           keyboardType="number-pad"
           maxLength={2}
           accessibilityLabel={`${label}: hora`}
-          onFocus={() => setFoco('h')}
+          onFocus={() => {
+            setFoco('h');
+            verCampoEnfocado();
+          }}
           onBlur={() => setFoco(null)}
           onChangeText={(t) => {
             const v = soloDigitos(t);
@@ -68,7 +73,10 @@ export function TimeFields({ label, value, onChange, onBlur, error, helper }: Pr
           keyboardType="number-pad"
           maxLength={2}
           accessibilityLabel={`${label}: minutos`}
-          onFocus={() => setFoco('m')}
+          onFocus={() => {
+            setFoco('m');
+            verCampoEnfocado();
+          }}
           onBlur={() => {
             setFoco(null);
             onBlur?.(); // se valida al salir del ultimo campo

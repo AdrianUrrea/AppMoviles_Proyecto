@@ -255,6 +255,10 @@ export type FilaCopia = {
   /** Lo que se ve en pantalla. */
   mostrar: string;
   sensible: boolean;
+  /** Linea de apoyo bajo el valor (por ejemplo, de que renglon del documento salio). */
+  detalle?: string;
+  /** Advertencia: por que conviene comparar este dato con el documento. */
+  aviso?: string;
 };
 
 /** Lista ordenada para copiar: solo los campos con valor, en el orden del formulario. */

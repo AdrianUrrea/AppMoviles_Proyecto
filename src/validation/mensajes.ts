@@ -89,14 +89,15 @@ export const MSG = {
       muyLargo: 'El nombre no puede tener más de 80 caracteres.',
     },
     lectura: {
-      boton: 'Leer cantidades del documento',
+      boton: 'Leer montos y fechas del documento',
       leyendo: 'Leyendo el documento…',
       aviso:
-        'La lectura es automática y puede equivocarse. Compara cada cantidad con tu documento antes de usarla. El documento se lee en tu teléfono y no se envía a ningún servicio.',
-      sinCantidades: 'No encontramos cantidades. Prueba con una foto más nítida, de frente, sin sombras y con buena luz.',
-      soloOtros: 'No encontramos montos de dinero, solo otros números. Puedes verlos con el botón de abajo.',
+        'La lectura es automática y puede equivocarse. Compara cada dato con tu documento antes de usarlo; debajo de cada uno ves el renglón de donde se leyó. El documento se lee en tu teléfono y no se envía a ningún servicio.',
+      sinCantidades: 'No encontramos montos ni fechas. Prueba con una foto más nítida, de frente, sin sombras y con buena luz.',
+      soloOtros: 'No encontramos montos de dinero ni fechas, solo otros números. Puedes verlos con el botón de abajo.',
       error: 'No pudimos leer el documento. Inténtalo de nuevo con una foto más nítida.',
-      noDisponible: 'Tu teléfono no permite leer cantidades de documentos en esta versión de la app.',
+      sinMontos: 'No encontramos montos de dinero en este documento.',
+      noDisponible: 'Tu teléfono no permite leer montos y fechas de documentos en esta versión de la app.',
     },
   },
   camara: {
@@ -111,6 +112,14 @@ export const MSG = {
     noSeAbrio: 'No pudimos abrir el enlace. Inténtalo de nuevo.',
     sinResultados: 'No encontramos trámites con esa búsqueda.',
     sinPerfil: 'No encontramos tus datos guardados.',
+  },
+  documentosDelTramite: {
+    titulo: 'Tus documentos',
+    ayuda: 'Elige un documento para ver sus montos y copiarlos. Se lee en tu teléfono, sin enviarlo a ningún servicio.',
+    vacio: 'Aún no tienes documentos guardados. Agrega uno para tener sus montos a la mano.',
+    agregar: 'Agregar un documento',
+    verDocumento: 'Abrir documento completo',
+    leyendo: 'Leyendo el documento…',
   },
   guias: {
     intro: 'Explicaciones sencillas de las palabras que vas a ver en tus trámites. Toca una para leerla.',

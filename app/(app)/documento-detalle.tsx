@@ -82,7 +82,7 @@ function Contenido({ id }: { id: string }) {
             </Text>
           </View>
 
-          {url && !imagenFallo ? <LecturaDeCantidades obtenerImagen={imagenParaLeer} /> : null}
+          {url && !imagenFallo ? <LecturaDeCantidades obtenerImagen={imagenParaLeer} nombreDocumento={documento.nombre} /> : null}
 
           <FormMessage message={errorAccion} />
           <Button title="Eliminar documento" variant="secondary" onPress={eliminar} />

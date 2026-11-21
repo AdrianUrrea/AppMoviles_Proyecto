@@ -2,6 +2,7 @@ import { forwardRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { TextInputProps } from 'react-native';
+import { useVerCampoEnfocado } from '@/components/ui/teclado';
 import { colors, radius, spacing, type } from '@/theme';
 
 type Props = Omit<TextInputProps, 'style' | 'secureTextEntry'> & {
@@ -26,6 +27,7 @@ export const TextField = forwardRef<ComponentRef<typeof TextInput>, Props>(funct
 ) {
   const [focused, setFocused] = useState(false);
   const [hidden, setHidden] = useState(secure);
+  const verCampoEnfocado = useVerCampoEnfocado();
   const message = error ?? helper;
 
   return (
@@ -43,6 +45,7 @@ export const TextField = forwardRef<ComponentRef<typeof TextInput>, Props>(funct
           accessibilityHint={error}
           onFocus={(e) => {
             setFocused(true);
+            verCampoEnfocado();
             onFocus?.(e);
           }}
           onBlur={(e) => {

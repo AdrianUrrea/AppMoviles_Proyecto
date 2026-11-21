@@ -48,13 +48,24 @@ export function ListaParaCopiar({ filas }: Props) {
                   key={f.id}
                   onPress={() => copiar(f)}
                   accessibilityRole="button"
-                  accessibilityLabel={`Copiar ${f.etiqueta}${f.sensible ? '' : `: ${f.mostrar}`}`}
+                  accessibilityLabel={`Copiar ${f.etiqueta}${f.sensible ? '' : `: ${f.mostrar}`}${f.detalle ? `. ${f.detalle}` : ''}${f.aviso ? `. Aviso: ${f.aviso}` : ''}`}
                   accessibilityState={{ selected: copiado }}
                   style={({ pressed }) => [styles.fila, (copiado || pressed) && styles.filaActiva]}
                 >
                   <View style={styles.texto}>
                     <Text style={styles.etiqueta}>{f.etiqueta}</Text>
                     <Text style={styles.valor}>{f.mostrar}</Text>
+                    {f.detalle ? (
+                      <Text style={styles.detalle} numberOfLines={2}>
+                        {f.detalle}
+                      </Text>
+                    ) : null}
+                    {f.aviso ? (
+                      <View style={styles.aviso}>
+                        <Ionicons name="alert-circle-outline" size={14} color={colors.primary} style={styles.avisoIcono} />
+                        <Text style={styles.avisoTexto}>{f.aviso}</Text>
+                      </View>
+                    ) : null}
                   </View>
                   <View style={styles.accion}>
                     <Ionicons name={copiado ? 'checkmark-circle' : 'copy-outline'} size={22} color={colors.primary} />
@@ -81,6 +92,10 @@ const styles = StyleSheet.create({
   texto: { flex: 1, gap: 2 },
   etiqueta: { ...type.caption, color: colors.muted },
   valor: { ...type.body, fontWeight: '600', color: colors.ink },
+  detalle: { ...type.caption, fontSize: 12, color: colors.muted },
+  aviso: { flexDirection: 'row', gap: spacing.xs, marginTop: 2 },
+  avisoIcono: { marginTop: 2 },
+  avisoTexto: { ...type.caption, fontSize: 12, color: colors.ink, flex: 1 },
   accion: { alignItems: 'center', minWidth: 58 },
   accionTexto: { ...type.caption, fontSize: 12, color: colors.primary },
 });
