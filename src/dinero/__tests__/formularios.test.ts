@@ -43,8 +43,8 @@ describe('integridad de los formularios', () => {
     const ded = FORMULARIOS.anual.secciones.find((s) => s.id === 'deducciones');
     expect(ded?.campos).toHaveLength(9);
   });
-  it('el orden es ingresos -> retenciones -> deducciones', () => {
-    expect(FORMULARIOS.anual.secciones.map((s) => s.id)).toEqual(['ingresos', 'retenciones', 'deducciones']);
+  it('el orden es ingresos -> deducciones autorizadas -> retenciones -> deducciones personales', () => {
+    expect(FORMULARIOS.anual.secciones.map((s) => s.id)).toEqual(['ingresos', 'autorizadas', 'retenciones', 'deducciones']);
   });
   it('la CLABE es obligatoria en el formulario de cuenta', () => {
     expect(camposDe('cuenta').find((c) => c.id === 'clabe')?.obligatorio).toBe(true);
@@ -68,14 +68,19 @@ describe('claves y periodos', () => {
   it('periodos del anual: los 5 ejercicios anteriores', () => {
     expect(periodosDisponibles('anual', new Date(2026, 10, 14))).toEqual(['2025', '2024', '2023', '2022', '2021']);
   });
-  it('periodos del mensual: 12 meses, cruzando el cambio de año', () => {
-    const p = periodosDisponibles('mensual', new Date(2026, 1, 10));
-    expect(p).toHaveLength(12);
+  it('periodos del mensual: de enero del año anterior al mes actual, cruzando el cambio de año', () => {
+    const p = periodosDisponibles('mensual', new Date(2026, 1, 10)); // febrero de 2026
+    expect(p).toHaveLength(14); // 12 de 2025 + enero y febrero de 2026
     expect(p[0]).toBe('2026-02');
     expect(p[1]).toBe('2026-01');
     expect(p[2]).toBe('2025-12');
-    expect(p[11]).toBe('2025-03');
+    expect(p[13]).toBe('2025-01');
     for (const periodo of p) expect(CLAVE_VALIDA.test(claveDe('mensual', periodo))).toBe(true);
+    expect(new Set(p).size).toBe(p.length);
+  });
+  it('en abril todavia se puede capturar enero del ejercicio que se declara en la anual', () => {
+    const p = periodosDisponibles('mensual', new Date(2027, 3, 20)); // abril de 2027, declarando el ejercicio 2026
+    for (let m = 1; m <= 12; m++) expect(p, `2026-${m}`).toContain(`2026-${String(m).padStart(2, '0')}`);
   });
   it('cuenta no tiene periodos', () => {
     expect(periodosDisponibles('cuenta', new Date())).toEqual([]);

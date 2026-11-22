@@ -433,6 +433,7 @@ export const GUIAS: readonly Guia[] = [
     paraQue: [
       'No todas las personas están obligadas a presentarla: depende de tus ingresos y de tu situación.',
       'Aunque no estés obligado, puede convenirte si tienes saldo a favor.',
+      'En esta app, lo que captures de tus declaraciones mensuales se suma para llenar tu anual: solo ajustas.',
     ],
     dondeLoEncuentras: ['En el portal del SAT, en “Declaraciones y pagos personas físicas”, opción “Anual”.'],
     ojo: 'Entra antes de que se acabe abril: en los últimos días el portal suele saturarse.',

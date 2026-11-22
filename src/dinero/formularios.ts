@@ -63,11 +63,22 @@ export const FORMULARIOS: Record<TipoDato, FormularioDinero> = {
         ],
       },
       {
+        id: 'autorizadas',
+        titulo: 'Deducciones autorizadas',
+        campos: [
+          monto(
+            'ded_autorizadas',
+            'Gastos y deducciones autorizadas de tu actividad o arrendamiento',
+            'Son los gastos de tu actividad, no las deducciones personales de más abajo. Si capturaste tus declaraciones mensuales, aquí se suman solos.',
+          ),
+        ],
+      },
+      {
         id: 'retenciones',
         titulo: 'ISR retenido y pagos',
         campos: [
           monto('isr_retenido', 'ISR retenido en el año', 'Lo muestra tu constancia de sueldos o tus recibos.'),
-          monto('pagos_provisionales', 'Pagos provisionales de ISR del año'),
+          monto('pagos_provisionales', 'Pagos provisionales de ISR del año', 'El ISR que pagaste con tus declaraciones mensuales. Si las capturaste, aquí se suma solo.'),
         ],
       },
       {
@@ -116,7 +127,14 @@ export const FORMULARIOS: Record<TipoDato, FormularioDinero> = {
     nota:
       'Qué campos usa tu declaración mensual depende de tu régimen y actividad; estos son los conceptos más comunes. El impuesto lo calcula el portal.',
     secciones: [
-      { id: 'ingresos', titulo: 'Ingresos del mes', campos: [monto('ing_mes', 'Ingresos del mes')] },
+      {
+        id: 'ingresos',
+        titulo: 'Ingresos del mes',
+        campos: [
+          monto('ing_mes', 'Ingresos del mes por actividad profesional o empresarial'),
+          monto('ing_arr_mes', 'Ingresos del mes por arrendamiento'),
+        ],
+      },
       {
         id: 'gastos',
         titulo: 'Gastos y deducciones',
@@ -127,7 +145,12 @@ export const FORMULARIOS: Record<TipoDato, FormularioDinero> = {
         titulo: 'Retenciones y pagos',
         campos: [
           monto('isr_ret_mes', 'ISR retenido en el mes'),
-          monto('pagos_ant', 'Pagos provisionales anteriores del año'),
+          monto(
+            'isr_pagado_mes',
+            'ISR pagado con esta declaración',
+            'El impuesto a cargo que pagaste con la declaración de este mes. Se suma mes a mes para tu declaración anual.',
+          ),
+          monto('pagos_ant', 'Pagos provisionales anteriores del año', 'Solo para llenar el portal; no se suma en tu anual.'),
         ],
       },
       {
@@ -141,9 +164,9 @@ export const FORMULARIOS: Record<TipoDato, FormularioDinero> = {
       },
     ],
     totales: [
-      { id: 'total_ingresos', etiqueta: 'Ingresos', suma: ['ing_mes'] },
+      { id: 'total_ingresos', etiqueta: 'Ingresos', suma: ['ing_mes', 'ing_arr_mes'] },
       { id: 'total_gastos', etiqueta: 'Gastos y deducciones', suma: ['ded_mes'] },
-      { id: 'referencia', etiqueta: 'Referencia: ingresos menos gastos (no es el impuesto)', suma: ['ing_mes'], resta: ['ded_mes'] },
+      { id: 'referencia', etiqueta: 'Referencia: ingresos menos gastos (no es el impuesto)', suma: ['ing_mes', 'ing_arr_mes'], resta: ['ded_mes'] },
     ],
   },
   cuenta: {
@@ -185,14 +208,20 @@ export function claveDe(tipo: TipoDato, periodo: string): string {
   return `${tipo}-${periodo}`;
 }
 
-/** anual: ejercicios (los ultimos 5, empezando por el anterior). mensual: ultimos 12 meses (YYYY-MM). cuenta: ninguno. */
+/**
+ * anual: ejercicios (los ultimos 5, empezando por el anterior).
+ * mensual: de enero del año anterior al mes actual (YYYY-MM, el mas reciente primero). Asi, en abril todavia se puede
+ *          capturar enero del ejercicio que se declara en la anual.
+ * cuenta: ninguno.
+ */
 export function periodosDisponibles(tipo: TipoDato, ahora: Date): string[] {
   if (tipo === 'cuenta') return [];
   if (tipo === 'anual') {
     const base = ahora.getFullYear() - 1;
     return Array.from({ length: 5 }, (_, i) => String(base - i));
   }
-  return Array.from({ length: 12 }, (_, i) => {
+  const cuantos = 12 + ahora.getMonth() + 1; // los 12 meses del año anterior + los del año en curso hasta hoy
+  return Array.from({ length: cuantos }, (_, i) => {
     const d = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   });

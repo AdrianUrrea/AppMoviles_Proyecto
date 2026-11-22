@@ -60,3 +60,23 @@ export async function guardarCaptura(clave: string, datos: Valores): Promise<voi
     throw aDineroError(e);
   }
 }
+
+/**
+ * Todas las declaraciones mensuales guardadas en la cuenta para un ejercicio (sin sanear). Las politicas RLS limitan
+ * el resultado a las del usuario. `periodo` es "AAAA-MM".
+ */
+export async function listarCapturasMensuales(ejercicio: string): Promise<{ periodo: string; datos: unknown }[]> {
+  if (!/^\d{4}$/.test(ejercicio)) throw new DineroError('UNKNOWN'); // el ejercicio entra en un LIKE: solo 4 digitos
+  try {
+    const { data, error } = await limite(
+      supabase.from('captura_financiera').select('clave, datos').like('clave', `mensual-${ejercicio}-%`),
+    );
+    if (error) throw error;
+    const filas = (data ?? []) as { clave: string; datos: unknown }[];
+    return filas
+      .filter((f) => CLAVE_VALIDA.test(f.clave))
+      .map((f) => ({ periodo: f.clave.slice('mensual-'.length), datos: f.datos }));
+  } catch (e) {
+    throw aDineroError(e);
+  }
+}

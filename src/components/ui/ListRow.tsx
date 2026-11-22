@@ -15,16 +15,19 @@ type Props = {
   derecha?: ComponentProps<typeof Ionicons>['name'] | null;
   onPress: () => void;
   accessibilityHint?: string;
+  /** Solo para filas que despliegan contenido: lo anuncian los lectores de pantalla. */
+  expandido?: boolean;
 };
 
 /** Fila tocable para usar dentro de GroupedList: icono opcional, titulo, descripcion y flecha. */
-export function ListRow({ titulo, descripcion, etiqueta, icono, izquierda, derecha = 'chevron-forward', onPress, accessibilityHint }: Props) {
+export function ListRow({ titulo, descripcion, etiqueta, icono, izquierda, derecha = 'chevron-forward', onPress, accessibilityHint, expandido }: Props) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={descripcion ? `${titulo}. ${descripcion}` : titulo}
       accessibilityHint={accessibilityHint}
+      accessibilityState={expandido === undefined ? undefined : { expanded: expandido }}
       style={({ pressed }) => [styles.fila, pressed && styles.presionada]}
     >
       {izquierda ??

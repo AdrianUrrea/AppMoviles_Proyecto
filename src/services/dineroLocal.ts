@@ -11,6 +11,8 @@ import {
   serializarRegistro,
 } from '@/dinero/local';
 import type { RegistroLocal, ResumenLocal } from '@/dinero/local';
+import type { RegistroMensual } from '@/dinero/acumulado';
+import { claveDe, sanearValores } from '@/dinero/formularios';
 import type { TipoDato } from '@/dinero/formularios';
 import { largeSecureStore } from '@/lib/largeSecureStore';
 import { logDev } from '@/lib/log';
@@ -84,6 +86,17 @@ export function actualizarRegistroLocal(
     }
     return nuevo;
   });
+}
+
+/** Declaraciones mensuales de un ejercicio que estan guardadas en este telefono (lo ultimo que se guardo, no los borradores). */
+export async function leerMensualesLocales(uid: string, ejercicio: string): Promise<RegistroMensual[]> {
+  const registros: RegistroMensual[] = [];
+  for (let m = 1; m <= 12; m++) {
+    const periodo = `${ejercicio}-${String(m).padStart(2, '0')}`;
+    const local = await leerRegistroLocal(uid, claveDe('mensual', periodo), 'mensual');
+    if (local.guardado) registros.push({ periodo, valores: sanearValores('mensual', local.guardado) });
+  }
+  return registros;
 }
 
 async function clavesDeUsuario(uid: string): Promise<string[]> {

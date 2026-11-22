@@ -115,7 +115,8 @@ export const MSG = {
   },
   documentosDelTramite: {
     titulo: 'Tus documentos',
-    ayuda: 'Elige un documento para ver sus montos y copiarlos. Se lee en tu teléfono, sin enviarlo a ningún servicio.',
+    ayuda:
+      'Abre la lista, elige un documento y copia sus montos sin salir del trámite. Se lee en tu teléfono, sin enviarlo a ningún servicio.',
     vacio: 'Aún no tienes documentos guardados. Agrega uno para tener sus montos a la mano.',
     agregar: 'Agregar un documento',
     verDocumento: 'Abrir documento completo',
@@ -140,6 +141,13 @@ export const MSG = {
       'Tienes datos que solo están en este teléfono y aún no llegan a tu cuenta. Si cierras sesión se perderán.',
     sinDatos: 'Aún no hay datos guardados. Llena el formulario y pulsa Guardar.',
     pesosEnteros: 'Si el portal pide pesos enteros, redondea el monto al copiarlo.',
+    mensualesNota:
+      'Es la suma de lo que guardaste en tus declaraciones mensuales. Se usa para llenar tu declaración anual, donde solo tendrás que hacer ajustes.',
+    anualVacioMensuales:
+      'Si presentas declaraciones mensuales, captúralas en «Declaración mensual»: aquí se sumarán para llenar tu declaración anual y solo tendrás que ajustar.',
+    anualLlenado:
+      'Llenamos tu declaración anual con la suma de tus declaraciones mensuales. Revisa y ajusta lo que haga falta, y pulsa Guardar.',
+    anualSinConexion: 'Sin conexión: la suma usa lo guardado en este teléfono y podría faltar algún mes.',
   },
 } as const;
 

@@ -9,6 +9,7 @@ import {
   formatearFechaCorta,
   formatearTamano,
   nombreSugerido,
+  resumenDeDocumentos,
   normalizarUriLocal,
 } from '../logica';
 
@@ -134,5 +135,19 @@ describe('normalizarUriLocal (rutas de Expo Go en Android)', () => {
     ]) {
       expect(normalizarUriLocal(u), u).toBe(u);
     }
+  });
+});
+
+describe('resumenDeDocumentos', () => {
+  it('sin documentos', () => {
+    expect(resumenDeDocumentos(0, false)).toBe('Aún no tienes documentos guardados');
+    expect(resumenDeDocumentos(0, true)).toBe('Aún no tienes documentos guardados');
+  });
+  it('con uno o varios, en singular y plural', () => {
+    expect(resumenDeDocumentos(1, false)).toBe('1 documento guardado · toca para verlo');
+    expect(resumenDeDocumentos(3, false)).toBe('3 documentos guardados · toca para verlos');
+  });
+  it('abierta, invita a ocultar', () => {
+    expect(resumenDeDocumentos(2, true)).toBe('2 documentos guardados · toca para ocultar');
   });
 });

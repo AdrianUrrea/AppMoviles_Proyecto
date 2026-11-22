@@ -76,3 +76,11 @@ export function formatearTamano(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
+
+/** Texto de la fila que despliega la lista de documentos dentro de un tramite ("3 documentos guardados..."). */
+export function resumenDeDocumentos(cantidad: number, abierta: boolean): string {
+  if (cantidad <= 0) return 'Aún no tienes documentos guardados';
+  const guardados = cantidad === 1 ? '1 documento guardado' : `${cantidad} documentos guardados`;
+  if (abierta) return `${guardados} · toca para ocultar`;
+  return `${guardados} · toca para ${cantidad === 1 ? 'verlo' : 'verlos'}`;
+}

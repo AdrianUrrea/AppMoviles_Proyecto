@@ -3,8 +3,10 @@ import { ActivityIndicator, AppState, StyleSheet, Text, View } from 'react-nativ
 import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AcumuladoDelAnio } from '@/components/AcumuladoDelAnio';
 import { FormTextField } from '@/components/form';
 import { ListaParaCopiar } from '@/components/ListaParaCopiar';
+import { ResumenDeMensuales } from '@/components/ResumenDeMensuales';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Chip } from '@/components/ui/Chip';
@@ -108,6 +110,8 @@ function Contenido({ tipo, periodoInicial }: { tipo: TipoDato; periodoInicial?: 
         </Section>
       ) : null}
 
+      {tipo === 'mensual' && periodo ? <AcumuladoDelAnio ejercicio={periodo.slice(0, 4)} /> : null}
+
       {loading ? <ActivityIndicator color={colors.primary} /> : null}
       {error ? (
         <View style={styles.bloque}>
@@ -139,6 +143,7 @@ function Contenido({ tipo, periodoInicial }: { tipo: TipoDato; periodoInicial?: 
             <Formulario
               key={`${clave}:${versionForm}`}
               tipo={tipo}
+              ejercicio={tipo === 'anual' ? periodo : undefined}
               iniciales={iniciales}
               onGuardar={guardar}
               onCambio={guardarBorrador}
@@ -171,12 +176,15 @@ const ESPERA_BORRADOR_MS = 500;
 
 function Formulario({
   tipo,
+  ejercicio,
   iniciales,
   onGuardar,
   onCambio,
   onIrACopiar,
 }: {
   tipo: TipoDato;
+  /** Solo en la declaracion anual: el ejercicio, para traer la suma de las mensuales. */
+  ejercicio?: string;
   iniciales: Valores;
   onGuardar: (v: Valores) => Promise<ResultadoGuardado>;
   onCambio: (v: Valores) => Promise<void>;
@@ -184,7 +192,7 @@ function Formulario({
 }) {
   const formulario = FORMULARIOS[tipo];
   const esquema = useMemo(() => crearEsquemaDinero(tipo), [tipo]);
-  const { control, handleSubmit } = useForm<Valores, unknown, Valores>({
+  const { control, handleSubmit, setValue } = useForm<Valores, unknown, Valores>({
     resolver: zodResolver(esquema),
     defaultValues: iniciales,
     mode: 'onBlur',
@@ -240,6 +248,16 @@ function Formulario({
   return (
     <View style={styles.formulario}>
       <Note texto={formulario.nota} icono="bulb-outline" />
+
+      {ejercicio ? (
+        <ResumenDeMensuales
+          ejercicio={ejercicio}
+          actuales={actuales}
+          onAplicar={(patch) => {
+            for (const [id, valor] of Object.entries(patch)) setValue(id, valor, { shouldDirty: true });
+          }}
+        />
+      ) : null}
 
       {formulario.secciones.map((seccion) => (
         <Section key={seccion.id} titulo={seccion.titulo}>
