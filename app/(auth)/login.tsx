@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { z } from 'zod';
+import { AuthHeader } from '@/components/ui/AuthHeader';
 import { Button } from '@/components/ui/Button';
 import { FormMessage } from '@/components/ui/FormMessage';
 import { Screen } from '@/components/ui/Screen';
@@ -46,10 +47,7 @@ export default function LoginScreen() {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={styles.title}>Iniciar sesión</Text>
-        <Text style={styles.subtitle}>Ingresa con tu correo y contraseña.</Text>
-      </View>
+      <AuthHeader titulo="Iniciar sesión" subtitulo="Ingresa con tu correo y contraseña." />
 
       <FormTextField
         control={control}
@@ -86,9 +84,6 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { gap: spacing.xs, marginTop: spacing.xl, marginBottom: spacing.sm },
-  title: { ...type.title, color: colors.ink },
-  subtitle: { ...type.body, color: colors.muted },
   separador: { alignItems: 'center', marginTop: spacing.sm },
   separadorTexto: { ...type.caption, color: colors.muted },
 });

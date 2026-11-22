@@ -3,10 +3,11 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { FilaCopia } from '@/dinero/formularios';
 import { copiarAlPortapapeles } from '@/lib/portapapeles';
+import { AccionCopiar } from '@/components/ui/AccionCopiar';
 import { Button } from '@/components/ui/Button';
 import { GroupedList } from '@/components/ui/GroupedList';
 import { Progreso } from '@/components/ui/Progreso';
-import { colors, spacing, type } from '@/theme';
+import { cifras, colors, spacing, type } from '@/theme';
 
 type Props = { filas: readonly FilaCopia[] };
 
@@ -50,7 +51,7 @@ export function ListaParaCopiar({ filas }: Props) {
                   accessibilityRole="button"
                   accessibilityLabel={`Copiar ${f.etiqueta}${f.sensible ? '' : `: ${f.mostrar}`}${f.detalle ? `. ${f.detalle}` : ''}${f.aviso ? `. Aviso: ${f.aviso}` : ''}`}
                   accessibilityState={{ selected: copiado }}
-                  style={({ pressed }) => [styles.fila, (copiado || pressed) && styles.filaActiva]}
+                  style={({ pressed }) => [styles.fila, pressed && styles.presionada, copiado && styles.copiada]}
                 >
                   <View style={styles.texto}>
                     <Text style={styles.etiqueta}>{f.etiqueta}</Text>
@@ -62,15 +63,12 @@ export function ListaParaCopiar({ filas }: Props) {
                     ) : null}
                     {f.aviso ? (
                       <View style={styles.aviso}>
-                        <Ionicons name="alert-circle-outline" size={14} color={colors.primary} style={styles.avisoIcono} />
+                        <Ionicons name="alert-circle-outline" size={15} color={colors.warning} style={styles.avisoIcono} />
                         <Text style={styles.avisoTexto}>{f.aviso}</Text>
                       </View>
                     ) : null}
                   </View>
-                  <View style={styles.accion}>
-                    <Ionicons name={copiado ? 'checkmark-circle' : 'copy-outline'} size={22} color={colors.primary} />
-                    <Text style={styles.accionTexto}>{copiado ? 'Copiado' : 'Copiar'}</Text>
-                  </View>
+                  <AccionCopiar copiado={copiado} />
                 </Pressable>
               );
             })}
@@ -86,16 +84,15 @@ export function ListaParaCopiar({ filas }: Props) {
 const styles = StyleSheet.create({
   contenedor: { gap: spacing.lg },
   grupo: { gap: spacing.sm },
-  seccion: { ...type.label, color: colors.muted },
-  fila: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.md, paddingHorizontal: spacing.lg, minHeight: 60 },
-  filaActiva: { backgroundColor: colors.tint },
+  seccion: { ...type.overline, color: colors.muted, paddingHorizontal: spacing.xs },
+  fila: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.md, paddingHorizontal: spacing.lg, minHeight: 64 },
+  presionada: { backgroundColor: colors.tint },
+  copiada: { backgroundColor: colors.successTint },
   texto: { flex: 1, gap: 2 },
   etiqueta: { ...type.caption, color: colors.muted },
-  valor: { ...type.body, fontWeight: '600', color: colors.ink },
+  valor: { ...type.body, ...cifras, fontSize: 17, fontWeight: '700', color: colors.ink },
   detalle: { ...type.caption, fontSize: 12, color: colors.muted },
   aviso: { flexDirection: 'row', gap: spacing.xs, marginTop: 2 },
   avisoIcono: { marginTop: 2 },
-  avisoTexto: { ...type.caption, fontSize: 12, color: colors.ink, flex: 1 },
-  accion: { alignItems: 'center', minWidth: 58 },
-  accionTexto: { ...type.caption, fontSize: 12, color: colors.primary },
+  avisoTexto: { ...type.caption, fontSize: 12, color: colors.warning, flex: 1 },
 });

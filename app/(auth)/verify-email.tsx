@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
+import { AuthHeader } from '@/components/ui/AuthHeader';
 import { Button } from '@/components/ui/Button';
 import { FormMessage } from '@/components/ui/FormMessage';
 import { Screen } from '@/components/ui/Screen';
@@ -9,7 +10,7 @@ import { useSession } from '@/providers/SessionProvider';
 import { getErrorMessage, resendCode, verifyCode } from '@/services/auth';
 import { LONGITUD_CODIGO } from '@/validation/codigo';
 import { codigoSchema } from '@/validation/login';
-import { colors, spacing, type } from '@/theme';
+import { colors, spacing } from '@/theme';
 
 const ESPERA_REENVIO = 60; // segundos
 
@@ -61,12 +62,14 @@ export default function VerifyEmailScreen() {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={styles.title}>Confirma tu correo</Text>
-        <Text style={styles.subtitle}>
-          Enviamos un código de {LONGITUD_CODIGO} dígitos a <Text style={styles.correo}>{correo}</Text>. Vence en 15 minutos.
-        </Text>
-      </View>
+      <AuthHeader
+        titulo="Confirma tu correo"
+        subtitulo={
+          <>
+            Enviamos un código de {LONGITUD_CODIGO} dígitos a <Text style={styles.correo}>{correo}</Text>. Vence en 15 minutos.
+          </>
+        }
+      />
 
       <TextField
         label="Código de confirmación"
@@ -106,9 +109,6 @@ export default function VerifyEmailScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { gap: spacing.sm, marginTop: spacing.xl },
-  title: { ...type.title, color: colors.ink },
-  subtitle: { ...type.body, color: colors.muted },
   correo: { fontWeight: '700', color: colors.ink },
   salidas: { marginTop: spacing.sm },
 });

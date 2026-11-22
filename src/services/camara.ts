@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { normalizarUriLocal } from '@/documentos/logica';
+import { asegurarPermiso } from '@/documentos/permisos';
 
 export type Captura =
   | { estado: 'ok'; uri: string }
@@ -15,14 +16,13 @@ function aCaptura(resultado: ImagePicker.ImagePickerResult): Captura {
   return { estado: 'ok', uri };
 }
 
-/** Abre la camara del sistema. Pide permiso si hace falta. */
+/**
+ * Abre la camara del sistema. Pide permiso si hace falta: SIEMPRE lo pide cuando no esta concedido, aunque el sistema
+ * diga que no se puede volver a preguntar (en Android "Preguntar siempre" se reporta asi). Ver `asegurarPermiso`.
+ */
 export async function tomarFoto(): Promise<Captura> {
-  let permiso = await ImagePicker.getCameraPermissionsAsync();
-  if (!permiso.granted) {
-    if (!permiso.canAskAgain) return { estado: 'sin_permiso', puedePreguntar: false };
-    permiso = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permiso.granted) return { estado: 'sin_permiso', puedePreguntar: permiso.canAskAgain };
-  }
+  const permiso = await asegurarPermiso(ImagePicker.getCameraPermissionsAsync, ImagePicker.requestCameraPermissionsAsync);
+  if (!permiso.concedido) return { estado: 'sin_permiso', puedePreguntar: permiso.puedePreguntar };
   const resultado = await ImagePicker.launchCameraAsync({
     mediaTypes: ['images'],
     quality: 1, // sin compresion aqui: se comprime una sola vez al preparar la imagen

@@ -31,7 +31,7 @@ export function Chip({ titulo, seleccionado, onPress, accessibilityLabel, conAvi
 
 const styles = StyleSheet.create({
   chip: {
-    minHeight: 40,
+    minHeight: 42,
     paddingHorizontal: spacing.lg,
     justifyContent: 'center',
     borderRadius: radius.pill,

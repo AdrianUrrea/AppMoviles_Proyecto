@@ -175,3 +175,32 @@ export async function signIn(correo: string, password: string): Promise<void> {
     throw toServiceError(e, 'signIn');
   }
 }
+
+/**
+ * Cambia la contraseña de la sesion abierta.
+ *  1. Se confirma la contraseña ACTUAL (la sesion abierta no basta: alguien podria usar un telefono desbloqueado).
+ *  2. Se guarda la nueva.
+ *  3. Se cierran las sesiones de los demas dispositivos, que usaban la contraseña anterior. Si esto falla, la
+ *     contraseña ya cambio y no se avisa de error.
+ */
+export async function changePassword(correo: string, actual: string, nueva: string): Promise<void> {
+  const email = correo.trim().toLowerCase();
+  try {
+    const { error: errorActual } = await limite(supabase.auth.signInWithPassword({ email, password: actual }));
+    if (errorActual) {
+      if (errorActual.code === 'invalid_credentials') throw new AuthServiceError('CURRENT_PASSWORD_WRONG');
+      throw errorActual;
+    }
+
+    const { error } = await limite(supabase.auth.updateUser({ password: nueva }));
+    if (error) {
+      if (error.code === 'same_password') throw new AuthServiceError('SAME_PASSWORD');
+      if (error.code === 'weak_password') throw new AuthServiceError('WEAK_PASSWORD');
+      throw error;
+    }
+
+    await limite(supabase.auth.signOut({ scope: 'others' })).catch(() => undefined);
+  } catch (e) {
+    throw toServiceError(e, 'changePassword');
+  }
+}

@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { asegurarPermiso } from '@/documentos/permisos';
 import { claveDia, diferenciaSync, formatearFechaHoraLarga } from '@/recordatorios/logica';
 import type { Recordatorio } from '@/recordatorios/logica';
 
@@ -64,15 +65,19 @@ export async function tienePermiso(): Promise<boolean> {
   }
 }
 
-/** Pide permiso si hace falta. Si el usuario ya lo nego de forma definitiva, no vuelve a preguntar. */
+/**
+ * Pide permiso si hace falta. Lo pide aunque el sistema diga que no se puede volver a preguntar (ese dato no es fiable
+ * en Android); si de verdad esta bloqueado, responde "denegado" al instante. Ver `asegurarPermiso`.
+ */
 export async function pedirPermiso(): Promise<EstadoPermiso> {
   if (!Notifications) return 'no_disponible';
+  const sistema = Notifications;
   try {
-    const actual = await Notifications.getPermissionsAsync();
-    if (actual.granted) return 'concedido';
-    if (!actual.canAskAgain) return 'denegado';
-    const respuesta = await Notifications.requestPermissionsAsync();
-    return respuesta.granted ? 'concedido' : 'denegado';
+    const resultado = await asegurarPermiso(
+      () => sistema.getPermissionsAsync(),
+      () => sistema.requestPermissionsAsync(),
+    );
+    return resultado.concedido ? 'concedido' : 'denegado';
   } catch {
     return 'no_disponible';
   }
@@ -145,54 +150,4 @@ export const useUltimaRespuestaNotificacion: () => Respuesta | null | undefined 
 /** true si la respuesta es un toque normal sobre la notificacion (no un boton de accion). */
 export function esToqueEnNotificacion(respuesta: Respuesta): boolean {
   return !!Notifications && respuesta.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER;
-}
-
-// ---------------------------------------------------------------------------
-// Diagnostico (solo desarrollo): para entender por que un aviso programado no llega.
-// ---------------------------------------------------------------------------
-
-export type DiagnosticoNotificaciones = {
-  disponible: boolean;
-  permiso: boolean;
-  /** Solo Android 12+: sin este permiso el sistema puede retrasar los avisos programados. */
-  alarmaExacta: 'concedida' | 'denegada' | 'desconocida';
-  programadas: { id: string; cuando: Date | null }[];
-};
-
-function cuandoDe(trigger: unknown): Date | null {
-  const t = trigger as { value?: unknown; date?: unknown } | null;
-  const v = t?.value ?? t?.date;
-  if (v instanceof Date) return v;
-  if (typeof v === 'number') return new Date(v < 1e11 ? v * 1000 : v); // segundos o milisegundos
-  return null;
-}
-
-export async function diagnosticarNotificaciones(): Promise<DiagnosticoNotificaciones> {
-  if (!Notifications) return { disponible: false, permiso: false, alarmaExacta: 'desconocida', programadas: [] };
-  const permiso = await tienePermiso();
-  let alarmaExacta: DiagnosticoNotificaciones['alarmaExacta'] = 'desconocida';
-  try {
-    alarmaExacta = (await Notifications.getExactAlarmPermissionsAsync()).granted ? 'concedida' : 'denegada';
-  } catch {
-    // iOS u otro entorno sin esa API
-  }
-  const lista = await Notifications.getAllScheduledNotificationsAsync();
-  return {
-    disponible: true,
-    permiso,
-    alarmaExacta,
-    programadas: lista.map((n) => ({ id: n.identifier, cuando: cuandoDe(n.trigger) })),
-  };
-}
-
-/** Programa un aviso de prueba para dentro de `segundos`. Devuelve la hora exacta a la que debe llegar. */
-export async function programarAvisoDePrueba(segundos: number): Promise<Date> {
-  if (!Notifications) throw new Error('Notificaciones no disponibles en este entorno.');
-  const cuando = new Date(Date.now() + segundos * 1000);
-  await Notifications.scheduleNotificationAsync({
-    identifier: 'prueba-diagnostico',
-    content: { title: 'Prueba de aviso programado', body: `Debía llegar a las ${cuando.toLocaleTimeString()}` },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: cuando, channelId: CANAL },
-  });
-  return cuando;
 }

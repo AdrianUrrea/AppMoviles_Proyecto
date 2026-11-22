@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { DatoCopiable } from '@/components/DatoCopiable';
+import { DocumentosParaTramite } from '@/components/DocumentosParaTramite';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Checkbox } from '@/components/ui/Checkbox';
@@ -151,6 +152,8 @@ function Contenido({ tramite }: { tramite: Tramite }) {
         ) : null}
         <Text style={styles.nota}>Tu CURP no se guarda en esta app: ten a la mano la tuya si el trámite la pide.</Text>
       </Section>
+
+      <DocumentosParaTramite />
 
       {tramite.datosDinero && tramite.datosDinero.length > 0 ? (
         <Section titulo="Tus datos de dinero" ayuda="Captura tus cifras una vez y cópialas en orden cuando estés en el portal.">

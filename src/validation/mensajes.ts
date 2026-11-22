@@ -12,6 +12,8 @@ export const MSG = {
     muyCorta: 'La contraseña debe tener al menos 8 caracteres.',
     muyLarga: 'La contraseña no puede tener más de 72 caracteres.',
     igualAlCorreo: 'La contraseña no puede ser igual al correo.',
+    actualObligatoria: 'Escribe tu contraseña actual.',
+    igualALaActual: 'La nueva contraseña debe ser distinta de la actual.',
   },
   confirmPassword: {
     obligatoria: 'Confirma tu contraseña.',
@@ -61,6 +63,9 @@ export const MSG = {
       'Este es el domicilio de tu perfil en la app. Cambiarlo aquí no lo actualiza ante el SAT: eso se hace en el portal.',
     domicilioGuardado: 'Domicilio actualizado.',
     sinCambios: 'No hiciste cambios en tu domicilio.',
+    contrasenaActualizada: 'Contraseña actualizada.',
+    contrasenaAviso:
+      'Por seguridad, escribe tu contraseña actual. Al cambiarla se cerrará tu sesión en otros dispositivos.',
   },
   privacidad: {
     obligatoria: 'Debes aceptar el aviso de privacidad y los términos.',
@@ -81,7 +86,7 @@ export const MSG = {
     },
     fechaPasada: 'No se pueden agendar recordatorios en fechas pasadas.',
     notificacionesNoDisponibles:
-      'Guardamos tu recordatorio, pero las notificaciones no están disponibles en esta versión de la app (Expo Go para Android no las incluye). Para recibirlas se necesita una compilación de desarrollo.',
+      'Recordatorio guardado.',
   },
   documento: {
     nombre: {
@@ -101,7 +106,9 @@ export const MSG = {
     },
   },
   camara: {
-    sinPermiso: 'Necesitamos permiso para usar la cámara. Actívalo en los ajustes del teléfono.',
+    sinPermiso:
+      'Necesitamos permiso para usar la cámara. Actívalo en los ajustes del teléfono.',
+    sinPermisoReintentar: 'Sin permiso no podemos usar la cámara. Toca «Tomar foto» para intentarlo de nuevo.',
     noSeAbrio: 'No pudimos abrir la cámara. Inténtalo de nuevo.',
   },
   tramites: {
@@ -157,6 +164,9 @@ export const AUTH_MESSAGES = {
   RFC_TAKEN: 'Este RFC ya está registrado.',
   PROFILE_REJECTED: 'No pudimos crear tu cuenta. Revisa tus datos e inténtalo de nuevo.',
   INVALID_CREDENTIALS: 'Correo o contraseña incorrectos.',
+  CURRENT_PASSWORD_WRONG: 'La contraseña actual no es correcta.',
+  SAME_PASSWORD: 'La nueva contraseña debe ser distinta de la actual.',
+  WEAK_PASSWORD: 'Esa contraseña es muy fácil de adivinar. Elige otra más segura.',
   EMAIL_NOT_VERIFIED: 'Debes confirmar tu correo para continuar.',
   CODE_INVALID: 'El código es incorrecto o ya venció. Solicita uno nuevo.',
   RATE_LIMITED: 'Demasiados intentos. Espera un momento e inténtalo de nuevo.',

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentRef, ReactNode } from 'react';
 import { Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TecladoContext } from '@/components/ui/teclado';
 import { desplazamientoParaVer } from '@/lib/teclado';
-import { colors, spacing } from '@/theme';
+import { colors, radius, spacing } from '@/theme';
 
 type Props = {
   children: ReactNode;
@@ -16,6 +16,8 @@ type Props = {
   pie?: ReactNode;
   /** Separacion vertical entre los bloques de la pantalla. */
   espaciado?: number;
+  /** Encabezado del color de marca a todo lo ancho, bajo la barra de estado (saludo del dashboard). */
+  hero?: ReactNode;
 };
 
 /** Aire entre el campo enfocado y el borde del teclado o de la barra fija. */
@@ -31,7 +33,8 @@ const MARGEN_CAMPO = 24;
  *  2. Al enfocar un campo (`useVerCampoEnfocado`), el scroll se mueve para dejarlo visible: reducir el area no basta,
  *     un campo de abajo puede quedar fuera de ella.
  */
-export function Screen({ children, scroll = true, conEncabezado = false, pie, espaciado = spacing.lg }: Props) {
+export function Screen({ children, scroll = true, conEncabezado = false, pie, espaciado = spacing.lg, hero }: Props) {
+  const insets = useSafeAreaInsets();
   const marco = useRef<ComponentRef<typeof View>>(null);
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const scrollY = useRef(0);
@@ -100,7 +103,12 @@ export function Screen({ children, scroll = true, conEncabezado = false, pie, es
   );
 
   return (
-    <SafeAreaView style={styles.safe} edges={conEncabezado ? ['left', 'right', 'bottom'] : undefined}>
+    <SafeAreaView style={styles.safe} edges={conEncabezado || hero ? ['left', 'right', 'bottom'] : undefined}>
+      {hero ? (
+        <View style={[styles.hero, { paddingTop: insets.top + spacing.lg }]}>
+          <View style={styles.heroInterior}>{hero}</View>
+        </View>
+      ) : null}
       <TecladoContext.Provider value={contexto}>
         <View ref={marco} style={styles.flex} collapsable={false} onLayout={medirMarco}>
           <KeyboardAvoidingView style={styles.flex} behavior="padding" keyboardVerticalOffset={desfase}>
@@ -140,6 +148,14 @@ export function Screen({ children, scroll = true, conEncabezado = false, pie, es
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
+  hero: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xl,
+    borderBottomLeftRadius: radius.xl,
+    borderBottomRightRadius: radius.xl,
+  },
+  heroInterior: { maxWidth: 520, width: '100%', alignSelf: 'center' },
   flex: { flex: 1 },
   content: {
     flexGrow: 1,

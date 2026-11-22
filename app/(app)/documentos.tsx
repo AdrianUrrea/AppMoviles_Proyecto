@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Linking, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, Linking, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { DocumentoItem } from '@/components/DocumentoItem';
@@ -20,6 +20,17 @@ export default function DocumentosScreen() {
   const { documentos, urls, loading, error, recargar } = useDocumentos();
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [permisoDenegado, setPermisoDenegado] = useState<{ puedePreguntar: boolean } | null>(null);
+
+  // Al volver de Ajustes se quita el aviso viejo: la persona pudo activar el permiso (o "Preguntar siempre") y al
+  // tocar "Tomar foto" otra vez se vuelve a pedir. Sin esto el mensaje se quedaba aunque ya estuviera activado.
+  const irAAjustes = permisoDenegado !== null && !permisoDenegado.puedePreguntar;
+  useEffect(() => {
+    if (!irAAjustes) return;
+    const suscripcion = AppState.addEventListener('change', (estado) => {
+      if (estado === 'active') setPermisoDenegado(null);
+    });
+    return () => suscripcion.remove();
+  }, [irAAjustes]);
 
   const irANuevo = (uri: string) => router.push({ pathname: '/documento-nuevo', params: { uri } });
 
@@ -61,7 +72,7 @@ export default function DocumentosScreen() {
       <FormMessage message={mensaje} />
       {permisoDenegado ? (
         <View style={styles.bloque}>
-          <FormMessage message={MSG.camara.sinPermiso} />
+          <FormMessage message={permisoDenegado.puedePreguntar ? MSG.camara.sinPermisoReintentar : MSG.camara.sinPermiso} />
           {!permisoDenegado.puedePreguntar ? (
             <Button title="Abrir ajustes del teléfono" variant="secondary" onPress={() => Linking.openSettings()} />
           ) : null}

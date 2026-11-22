@@ -41,14 +41,17 @@ export const domicilioCampos = {
   estado: textoObligatorio(MSG.domicilio.estado),
 };
 
+/** Reglas de una contraseña nueva (registro y cambio de contraseña). */
+export const passwordSchema = z
+  .string()
+  .min(1, MSG.password.obligatoria)
+  .min(8, MSG.password.muyCorta)
+  .max(72, MSG.password.muyLarga); // limite de bcrypt
+
 export const registroSchema = z
   .object({
     correo: correoSchema,
-    password: z
-      .string()
-      .min(1, MSG.password.obligatoria)
-      .min(8, MSG.password.muyCorta)
-      .max(72, MSG.password.muyLarga), // limite de bcrypt
+    password: passwordSchema,
     confirmPassword: z.string().min(1, MSG.confirmPassword.obligatoria),
     nombre: nombreSchema(MSG.nombre),
     apellidoPaterno: nombreSchema(MSG.apellidoPaterno),

@@ -13,7 +13,7 @@ export function Note({ texto, icono = 'information-circle-outline' }: { texto: s
 }
 
 const styles = StyleSheet.create({
-  nota: { flexDirection: 'row', gap: spacing.md, padding: spacing.md, borderRadius: radius.md, backgroundColor: colors.tint },
+  nota: { flexDirection: 'row', gap: spacing.md, padding: spacing.md, borderRadius: radius.md, backgroundColor: colors.tint, borderWidth: 1, borderColor: colors.tintStrong },
   icono: { marginTop: 1 },
   texto: { ...type.caption, fontSize: 14, lineHeight: 20, color: colors.ink, flex: 1 },
 });

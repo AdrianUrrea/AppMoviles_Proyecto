@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AuthHeader } from '@/components/ui/AuthHeader';
 import { Button } from '@/components/ui/Button';
 import { FormMessage } from '@/components/ui/FormMessage';
 import { Screen } from '@/components/ui/Screen';
@@ -60,10 +61,7 @@ export default function RegisterScreen() {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={styles.title}>Crear cuenta</Text>
-        <Text style={styles.subtitle}>Todos los campos son obligatorios, salvo los marcados como opcionales.</Text>
-      </View>
+      <AuthHeader titulo="Crear cuenta" subtitulo="Todos los campos son obligatorios, salvo los marcados como opcionales." />
 
       <Text style={styles.section}>Tu cuenta</Text>
       <FormTextField
@@ -171,8 +169,5 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { gap: spacing.xs, marginTop: spacing.md },
-  title: { ...type.title, color: colors.ink },
-  subtitle: { ...type.body, color: colors.muted },
   section: { ...type.section, color: colors.ink, marginTop: spacing.sm },
 });

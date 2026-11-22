@@ -10,6 +10,7 @@ import { ListRow } from '@/components/ui/ListRow';
 import { Note } from '@/components/ui/Note';
 import { Screen } from '@/components/ui/Screen';
 import { Section } from '@/components/ui/Section';
+import { useCerrarSesion } from '@/hooks/useCerrarSesion';
 import { usePerfilCompleto } from '@/hooks/usePerfilCompleto';
 import { iniciales, nombreCompleto } from '@/perfil/logica';
 import { filasDeDatos } from '@/tramites/logica';
@@ -25,8 +26,9 @@ const AVISO_MS = 4000;
 
 export default function PerfilScreen() {
   const router = useRouter();
-  const { guardado } = useLocalSearchParams<{ guardado?: string }>();
+  const { guardado, contrasena } = useLocalSearchParams<{ guardado?: string; contrasena?: string }>();
   const { perfil, loading, error, reintentar } = usePerfilCompleto();
+  const { cerrarSesion, cerrando } = useCerrarSesion();
 
   // Al volver de editar el domicilio, se recarga el perfil (la primera vez ya lo cargo el hook).
   const primeraVez = useRef(true);
@@ -37,12 +39,12 @@ export default function PerfilScreen() {
     }, [reintentar]),
   );
 
-  // El aviso de "guardado" llega como parametro de la ruta y se quita solo.
+  // Los avisos de "guardado" y "contraseña actualizada" llegan como parametro de la ruta y se quitan solos.
   useEffect(() => {
-    if (!guardado) return;
-    const t = setTimeout(() => router.setParams({ guardado: '' }), AVISO_MS);
+    if (!guardado && !contrasena) return;
+    const t = setTimeout(() => router.setParams({ guardado: '', contrasena: '' }), AVISO_MS);
     return () => clearTimeout(t);
-  }, [guardado, router]);
+  }, [guardado, contrasena, router]);
 
   const personales = perfil ? filasDeDatos(perfil, DATOS_PERSONALES) : [];
   const domicilio = perfil ? filasDeDatos(perfil, DOMICILIO) : [];
@@ -71,6 +73,7 @@ export default function PerfilScreen() {
       {!loading && !error && !perfil ? <Text style={styles.texto}>{MSG.tramites.sinPerfil}</Text> : null}
 
       {guardado ? <FormMessage tone="info" message={MSG.perfil.domicilioGuardado} /> : null}
+      {contrasena ? <FormMessage tone="info" message={MSG.perfil.contrasenaActualizada} /> : null}
 
       {perfil ? (
         <>
@@ -100,19 +103,20 @@ export default function PerfilScreen() {
               />
             </GroupedList>
           </Section>
-
-          <Section titulo="Cuenta">
-            <GroupedList>
-              <ListRow
-                icono="settings-outline"
-                titulo="Contraseña y sesión"
-                descripcion="Configuración de tu cuenta"
-                onPress={() => router.push('/configuracion')}
-              />
-            </GroupedList>
-          </Section>
         </>
       ) : null}
+
+      <Section titulo="Cuenta">
+        <GroupedList>
+          <ListRow
+            icono="key-outline"
+            titulo="Cambiar contraseña"
+            descripcion="Elige una contraseña nueva"
+            onPress={() => router.push('/perfil-password')}
+          />
+        </GroupedList>
+        <Button title="Cerrar sesión" variant="secondary" loading={cerrando} onPress={cerrarSesion} />
+      </Section>
     </Screen>
   );
 }

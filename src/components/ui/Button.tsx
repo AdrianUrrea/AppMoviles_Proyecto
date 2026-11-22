@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
-import { colors, radius, spacing, type } from '@/theme';
+import { colors, radius, shadow, spacing, type } from '@/theme';
 
 type Props = {
   title: string;
@@ -39,6 +39,7 @@ export function Button({ title, onPress, variant = 'primary', loading = false, d
         styles.base,
         variant === 'primary' && styles.primary,
         variant === 'primary' && pressed && styles.primaryPressed,
+        pressed && variant !== 'text' && styles.presionado,
         variant === 'secondary' && styles.secondary,
         variant === 'secondary' && pressed && styles.secondaryPressed,
         variant === 'tonal' && styles.tonal,
@@ -65,22 +66,23 @@ export function Button({ title, onPress, variant = 'primary', loading = false, d
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 52,
+    minHeight: 54,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: radius.md,
+    borderRadius: radius.md + 2,
   },
-  primary: { backgroundColor: colors.primary },
-  primaryPressed: { backgroundColor: colors.primaryPressed },
-  secondary: { borderWidth: 1.5, borderColor: colors.primary, backgroundColor: 'transparent' },
+  primary: { backgroundColor: colors.primary, ...shadow.raised },
+  primaryPressed: { backgroundColor: colors.primaryPressed, shadowOpacity: 0.1, elevation: 1 },
+  secondary: { borderWidth: 1.5, borderColor: colors.primary, backgroundColor: colors.surface },
   secondaryPressed: { backgroundColor: colors.tint },
   tonal: { backgroundColor: colors.tint },
   tonalPressed: { backgroundColor: colors.tintStrong },
-  text: { backgroundColor: 'transparent' },
-  inactive: { opacity: 0.5 },
-  label: { ...type.body, fontWeight: '600', textAlign: 'center' },
+  text: { backgroundColor: 'transparent', minHeight: 48 },
+  presionado: { transform: [{ scale: 0.985 }] },
+  inactive: { opacity: 0.45 },
+  label: { ...type.body, fontWeight: '600', textAlign: 'center', letterSpacing: 0.1 },
   labelOnPrimary: { color: colors.onPrimary },
   labelPrimary: { color: colors.primary },
 });

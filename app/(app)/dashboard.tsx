@@ -1,12 +1,15 @@
-import { useRef } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { FormMessage } from '@/components/ui/FormMessage';
 import { Screen } from '@/components/ui/Screen';
 import { SectionCard } from '@/components/ui/SectionCard';
 import { SECCIONES } from '@/config/secciones';
 import { useProfile } from '@/hooks/useProfile';
+import { iniciales } from '@/perfil/logica';
 import { useSession } from '@/providers/SessionProvider';
 import { colors, spacing, type } from '@/theme';
 
@@ -19,6 +22,15 @@ export default function DashboardScreen() {
   const { perfil, loading, error, reintentar } = useProfile(user?.id);
   const ultimoToque = useRef(0);
 
+  // La barra de estado es clara solo mientras esta pantalla esta a la vista (las demas pantallas tienen fondo claro).
+  const [enfoque, setEnfoque] = useState(true);
+  useFocusEffect(
+    useCallback(() => {
+      setEnfoque(true);
+      return () => setEnfoque(false);
+    }, []),
+  );
+
   const abrir = (ruta: string) => {
     const ahora = Date.now();
     if (ahora - ultimoToque.current < VENTANA_TOQUE_MS) return;
@@ -27,18 +39,27 @@ export default function DashboardScreen() {
   };
 
   return (
-    <Screen espaciado={spacing.xl}>
-      <View style={styles.header}>
-        <View style={styles.saludoFila}>
-          <Text style={styles.saludo} numberOfLines={1} ellipsizeMode="tail">
-            {perfil ? `Hola, ${perfil.nombre}` : 'Hola'}
-          </Text>
-          {loading ? <ActivityIndicator color={colors.primary} /> : null}
+    <Screen
+      espaciado={spacing.xl}
+      hero={
+        <View style={styles.heroFila}>
+          <View style={styles.heroTextos}>
+            <Text style={styles.heroSaludo}>Hola,</Text>
+            <Text style={styles.heroNombre} numberOfLines={1} ellipsizeMode="tail">
+              {perfil ? perfil.nombre : 'Bienvenido'}
+            </Text>
+          </View>
+          {loading ? (
+            <ActivityIndicator color={colors.onPrimary} />
+          ) : perfil ? (
+            <Pressable onPress={() => abrir('/perfil')} accessibilityRole="button" accessibilityLabel="Mi perfil" hitSlop={8}>
+              <Avatar iniciales={iniciales(perfil.nombre, perfil.apellido_paterno)} tamano={52} invertido />
+            </Pressable>
+          ) : null}
         </View>
-        <Text style={styles.correo} numberOfLines={1} ellipsizeMode="middle">
-          {user?.email}
-        </Text>
-      </View>
+      }
+    >
+      {enfoque ? <StatusBar style="light" /> : null}
 
       {error ? (
         <View style={styles.errorBloque}>
@@ -46,6 +67,10 @@ export default function DashboardScreen() {
           <Button title="Reintentar" variant="secondary" loading={loading} onPress={reintentar} />
         </View>
       ) : null}
+
+      <Text style={styles.pregunta} accessibilityRole="header">
+        ¿Qué necesitas hacer hoy?
+      </Text>
 
       {/* La primera tarjeta de ancho completo es la accion principal; las demas de ancho completo son accesos secundarios. */}
       <View style={styles.grid}>
@@ -66,10 +91,12 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { gap: 2, marginTop: spacing.md },
-  saludoFila: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  saludo: { ...type.title, color: colors.ink, flexShrink: 1 },
-  correo: { ...type.body, color: colors.muted },
+  heroFila: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
+  heroTextos: { flex: 1, gap: 2 },
+  heroSaludo: { ...type.body, color: colors.onPrimaryMuted },
+  heroNombre: { ...type.title, color: colors.onPrimary },
+  heroCorreo: { ...type.caption, color: colors.onPrimaryMuted, marginTop: 2 },
   errorBloque: { gap: spacing.md },
+  pregunta: { ...type.section, color: colors.ink, marginBottom: -spacing.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
 });

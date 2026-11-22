@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import type { Ionicons } from '@expo/vector-icons';
 
-export type SeccionId = 'tramites' | 'documentos' | 'calendario' | 'guias' | 'perfil' | 'configuracion';
+export type SeccionId = 'tramites' | 'documentos' | 'calendario' | 'guias' | 'perfil';
 
 export type Seccion = {
   id: SeccionId;
@@ -51,16 +51,8 @@ export const SECCIONES: readonly Seccion[] = [
   {
     id: 'perfil',
     titulo: 'Mi perfil',
-    descripcion: 'Tus datos y tu domicilio.',
+    descripcion: 'Tus datos, contraseña y sesión.',
     icono: 'person-outline',
     ruta: '/perfil',
-  },
-  {
-    id: 'configuracion',
-    titulo: 'Configuración',
-    descripcion: 'Contraseña y sesión.',
-    icono: 'settings-outline',
-    ruta: '/configuracion',
-    anchoCompleto: true,
   },
 ];

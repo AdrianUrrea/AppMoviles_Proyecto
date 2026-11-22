@@ -34,9 +34,11 @@ export default function AppLayout() {
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.ink,
-        headerTitleStyle: { fontWeight: '600' },
+        headerTintColor: colors.primary,
+        headerTitleStyle: { fontWeight: '700', fontSize: 17, color: colors.ink },
         headerShadowVisible: false,
+        headerBackButtonDisplayMode: 'minimal',
+        contentStyle: { backgroundColor: colors.background },
       }}
     >
       <Stack.Screen name="dashboard" options={{ headerShown: false }} />
@@ -53,7 +55,7 @@ export default function AppLayout() {
       <Stack.Screen name="guia-detalle" options={{ title: 'Guía' }} />
       <Stack.Screen name="perfil" options={{ title: 'Mi perfil' }} />
       <Stack.Screen name="perfil-domicilio" options={{ title: 'Editar domicilio' }} />
-      <Stack.Screen name="configuracion" options={{ title: 'Configuración' }} />
+      <Stack.Screen name="perfil-password" options={{ title: 'Cambiar contraseña' }} />
     </Stack>
   );
 }
