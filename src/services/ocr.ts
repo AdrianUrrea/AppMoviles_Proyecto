@@ -3,34 +3,40 @@
  * `expo-text-extractor`. La imagen NO sale del telefono.
  *
  * El modulo es nativo: NO existe en Expo Go, solo en una version de desarrollo o de produccion de la app
- * (`npx expo run:android` / `npx expo run:ios`, o una build de EAS). Por eso se carga con `require` dentro de
- * un try: en Expo Go la app sigue funcionando y simplemente oculta el boton.
+ * (`npx expo run:android` / `npx expo run:ios`, o una build de EAS). En Expo Go ni siquiera se carga la
+ * libreria: la app sigue funcionando y simplemente oculta el boton.
  *
  * Android devuelve bloques de texto (pueden traer varios renglones) e iOS devuelve renglones;
  * `extraerCantidades` ya acepta ambos.
  */
+import { requireOptionalNativeModule } from 'expo-modules-core';
 
 type ModuloOcr = {
   isSupported: boolean;
   extractTextFromImage: (uri: string) => Promise<string[]>;
 };
 
-let modulo: ModuloOcr | null | undefined;
+let modulo: ModuloOcr | null = null;
+let intentado = false;
 
 function cargar(): ModuloOcr | null {
-  if (modulo !== undefined) return modulo;
+  if (intentado) return modulo;
+  intentado = true;
+
+  // Expo Go: el modulo nativo no existe, asi que no cargamos la libreria (evita el error y su log).
+  if (!requireOptionalNativeModule('ExpoTextExtractor')) return null;
+
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const cargado = require('expo-text-extractor') as ModuloOcr;
-    modulo = cargado.isSupported ? cargado : null;
+    modulo = require('expo-text-extractor') as ModuloOcr;
   } catch {
-    modulo = null; // Expo Go u otro entorno sin el modulo nativo
+    modulo = null;
   }
   return modulo;
 }
 
 export function lecturaDisponible(): boolean {
-  return cargar() !== null;
+  const m = cargar();
+  return !!m && m.isSupported;
 }
 
 /** Texto reconocido en la imagen (archivo local). Lanza si el modulo no esta o la lectura falla. */
