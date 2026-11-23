@@ -24,6 +24,7 @@ function cargar(): ModuloOcr | null {
   intentado = true;
 
   // Expo Go: el modulo nativo no existe, asi que no cargamos la libreria (evita el error y su log).
+  
   if (!requireOptionalNativeModule('ExpoTextExtractor')) return null;
 
   try {
